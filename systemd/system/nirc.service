@@ -1,0 +1,15 @@
+[Unit]
+Description=Web IRC client
+After=network.target
+
+[Service]
+Environment="PORT=8067"
+User=nobody
+ExecStart=/usr/local/bin/node /usr/local/src/nirc/server.js
+Type=simple
+StandardError=journal
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
+

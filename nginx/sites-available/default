@@ -1,0 +1,274 @@
+upstream couch {
+	server 127.0.0.1:5984;
+	#server 198.98.53.105:5984;
+	#server rochako.rochack.hype:5984;
+	#server haystack.csug.rochester.edu:5984;
+}
+
+upstream couchstack {
+	server localhost:5985;
+	#server csug.rochester.edu.
+}
+
+upstream couches {
+	# server from both rochako couch and haystack couch
+	server localhost:5985;
+	server 198.98.53.105:5984;
+}
+
+# webwork stuff
+# todo: move this to another file
+
+#set $webwork_dir "/opt/webwork/webwork2";
+
+# disabling webwork because of error:
+#perl_modules "/opt/webwork/webwork2/lib";
+#perl_modules "/opt/webwork/pg/lib";
+#perl_require Nginx/WeBWorK.pm;
+
+#perl_set $webwork_dir '
+#	sub {
+#		my $webwork_dir = "/opt/webwork/webwork2";
+#		$WeBWorK::Constants::WEBWORK_DIRECTORY = $webwork_dir;
+#		return $webwork_dir;
+#	}
+#';
+#perl_modules $webwork_dir"/lib";
+
+# main server
+
+server {
+	listen   80 default;
+	listen   [::]:80 default ipv6only=on;
+	listen 443 ssl;
+
+	server_name _;
+
+	set $site /srv/http/localhost;
+	set $new_host localhost;
+	if (-e /srv/http/$host) {
+		set $new_host $host;
+	}
+	set $site /srv/http/$new_host;
+
+	root $site/htdocs;
+
+	access_log  /var/log/nginx/$new_host.access.log;
+	error_log /var/log/nginx/error.log info;
+
+	client_max_body_size 128M;
+
+	location / {
+		index  index.html index.htm;
+		autoindex on;
+		#try_files $uri $uri/index.html;
+		#try_files $uri $uri/index.html @github-page;
+		try_files $uri $uri/index.html /main$uri /main$uri/index.html;
+	}
+
+	location ~* \.(manifest)$ {
+		expires -1;
+	}
+
+	location @github-page {
+		proxy_pass http://rochack.github.io;
+		proxy_redirect default;
+		proxy_set_header Host rochack.org;
+		proxy_buffering off;
+	}
+
+	location /couch/ {
+		proxy_pass http://couch/;
+		proxy_redirect default;
+		proxy_buffering off;
+		proxy_intercept_errors off;
+	}
+
+	location /couchstack/ {
+		proxy_pass http://couchstack/;
+		proxy_redirect default;
+		proxy_buffering off;
+		proxy_intercept_errors off;
+	}
+
+	location /codemarkov/ {
+		#proxy_pass http://couches/codemarkov/_design/codemarkov/_rewrite/;
+		proxy_pass http://couch/codemarkov/_design/codemarkov/_rewrite/;
+		proxy_redirect default;
+		proxy_buffering off;
+		proxy_intercept_errors off;
+		proxy_next_upstream error timeout http_500;
+	}
+
+	location /stats/ {
+		proxy_pass http://rochako.rochack.org/;
+		#proxy_pass http://couch/rochackircmarkov/_design/irc_stats/_rewrite/;
+		proxy_set_header Host stats.rochack.org;
+		proxy_redirect default;
+		proxy_buffering off;
+	}
+
+	# local dev for irc_stats
+	location ~ ^/stats/(.*\.(js|css|html))?$ {
+		alias /srv/http/localhost/htdocs/irc/_attachments/$1;
+	}
+
+	# for couchdb
+	location /_session {
+		proxy_pass http://couch/_session;
+		proxy_redirect default;
+		proxy_buffering off;
+	}
+
+	location /livereload/ {
+		proxy_pass http://localhost:35729/;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+	}
+
+	location /food/ {
+		alias /srv/http/localhost/htdocs/food/attachments/;
+		index  index.html;
+		autoindex on;
+	}
+
+	location /food/login {
+		proxy_pass http://localhost:8098/login;
+		proxy_redirect default;
+		proxy_buffering off;
+		proxy_intercept_errors off;
+	}
+
+	location /food/design {
+		proxy_pass http://couch/mealplandata/_design/mealplandata;
+		proxy_redirect default;
+		proxy_buffering off;
+	}
+
+	location /food/db {
+		proxy_pass http://couch/mealplandata;
+		proxy_redirect default;
+		proxy_buffering off;
+		proxy_intercept_errors off;
+	}
+
+	location /irc/ {
+		proxy_pass http://localhost:8067/;
+		proxy_redirect default;
+		proxy_buffering off;
+		proxy_intercept_errors off;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+	}
+
+	# for irc subway
+	location /assets {
+		alias /usr/local/src/subway/assets/;
+		autoindex on;
+	}
+
+	location /skedge/assets {
+		alias /srv/http/localhost/skedge/public/skedge/assets;
+		index  index.html;
+		autoindex on;
+	}
+
+	location /skedge/ {
+		proxy_pass http://127.0.0.1:8032/;
+		#proxy_pass http://unix:/var/run/skedge.sock;
+		proxy_redirect default;
+		proxy_buffering off;
+	}
+
+	location /studying/ {
+		proxy_pass http://127.0.0.1:5000/;
+		proxy_redirect default;
+		proxy_buffering off;
+	}
+
+	location /shell/ {
+		proxy_pass http://127.0.0.1:8075/;
+		proxy_redirect default;
+		proxy_buffering off;
+		proxy_intercept_errors off;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+	}
+
+	#error_page  404  /404.html;
+
+	# redirect server error pages to the static page /50x.html
+	#
+	#error_page   500 502 503 504  /50x.html;
+	#location = /50x.html {
+	#	root   /srv/http/nginx-default;
+	#}
+
+	location ~ \.php$ {
+		#try_files $uri =404;
+		fastcgi_pass   php;
+		fastcgi_index  index.php;
+		fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+		include fastcgi_params;
+	}
+
+	#location /statuscat {
+	#	try_files /srv/http/statuscats/$uri /srv/http/statuscats/$status.jpg;
+	#}
+
+	# webwork stuff
+
+	#set $webwork_dir "/opt/webwork/webwork2";
+	set $webwork_url "/webwork";
+	set $pg_dir "/opt/webwork/pg";
+	set $webwork_htdocs_url "/webwork_files";
+	set $webwork_htdocs_dir "/opt/webwork/webwork2/htdocs";
+	set $webwork_courses_url "/webwork_course_files";
+	set $webwork_courses_dir "/opt/webwork/courses";
+
+	location /webwork/ {
+		# sorry, no webwork today
+		#perl Nginx::WeBWorK::handler;
+	}
+
+	location /webwork_files/ {
+		alias $webwork_htdocs_dir/;
+		autoindex on;
+	}
+
+	location ~ ^/webwork_course_files/([^/]*)/(.*)$ {
+		alias $webwork_courses_dir/$1/html/$2;
+		autoindex on;
+	}
+
+	# allows the "show source" button to work for demonstration "courses"
+	location ~ ^/webwork_course_files/([^/]*)/show-source.cgi/(.*)$ {
+		alias $webwork_courses_dir/$1/html/show-source.cgi/$2;
+	}
+
+}
+
+# couchdb ssl mirror
+#server {
+#	listen 6984 ssl;
+#	client_max_body_size 256M;
+#
+#	location / {
+#		proxy_pass http://couch/;
+#	}
+#}
+
+# misc ssl websocket passthrough to 8888
+server {
+	listen 8883 ssl;
+
+	location / {
+		proxy_pass http://localhost:8888/;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+	}
+}

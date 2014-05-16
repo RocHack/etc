@@ -1,0 +1,9 @@
+# If you edit the file, you have to run "smtpctl update table aliases"
+postmaster	rochack.cel@lehnerstudios.com
+webmaster	rochack.cel@lehnerstudios.com
+feedback	rochack@googlegroups.com
+hi			rochack@googlegroups.com
+hackathon	steve@stevegattuso.me
+root		clehner
+admin		clehner
+celehner	clehner

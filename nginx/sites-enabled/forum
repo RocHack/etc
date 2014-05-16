@@ -1,0 +1,17 @@
+server {
+	listen   80;
+	listen 443 ssl;
+	#listen   [::]:80;
+
+	server_name forum.rochack.org talk.rochack.org;
+	
+	access_log /var/log/nginx/forum.rochack.org.access.log;
+	error_log /var/log/nginx/error.log info;
+
+	location / {
+		#proxy_pass https://math.webwork.rochester.edu/;
+		proxy_pass http://192.241.133.230/;
+		proxy_set_header Host forum.rochack.org;
+		proxy_set_header X-Real-IP $remote_addr;
+	}
+}
