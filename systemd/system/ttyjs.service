@@ -1,0 +1,13 @@
+[Unit]
+Description=Web-based terminal site
+After=network.target
+
+[Service]
+ExecStart=/srv/http/localhost/tty.js/start.sh
+User=ttyjs
+Type=simple
+StandardError=journal
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target

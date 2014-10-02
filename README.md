@@ -15,6 +15,7 @@ want to learn something about how we configure our services.
 - mail server
 - account creation service
 - web IRC client
+- ttyjs browser-based Terminal
 
 ## Notes
 
