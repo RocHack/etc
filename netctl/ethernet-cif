@@ -1,0 +1,21 @@
+Description='A static ethernet connection to CIF'
+Interface=eth0
+Connection=ethernet
+IP=static
+Address=('128.151.220.121/24')
+#Routes=('128.151.220.121/24 via 128.151.220.250')
+Gateway='128.151.220.250'
+DNS=('128.151.224.6' '208.67.220.220' '128.151.220.30')
+#DNS=('128.151.224.6' '208.67.220.220' '128.151.7.6' '128.151.2.1' '128.151.220.30')
+
+DNSDomain='cif.rochester.edu'
+
+## For IPv6 autoconfiguration
+#IP6=stateless
+
+## For IPv6 static address configuration
+#IP6=static
+#Address6=('1234:5678:9abc:def::1/64' '1234:3456::123/96')
+#Routes6=('abcd::1234')
+#Gateway6='1234:0:123::abcd'
+
