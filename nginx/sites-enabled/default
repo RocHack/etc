@@ -138,7 +138,7 @@ server {
 	}
 
 	location /food/ {
-		alias /srv/http/localhost/htdocs/food/attachments/;
+		alias /srv/http/localhost/htdocs-overlay/food/attachments/;
 		index  index.html;
 		autoindex on;
 	}
@@ -164,7 +164,8 @@ server {
 	}
 
 	location /irc/ {
-		proxy_pass http://localhost:8067/;
+		#proxy_pass http://localhost:8067/;
+		proxy_pass http://localhost:9000/;
 		proxy_redirect default;
 		proxy_buffering off;
 		proxy_intercept_errors off;
