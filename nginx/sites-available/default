@@ -40,7 +40,7 @@ upstream couches {
 server {
 	listen   80 default;
 	listen   [::]:80 default ipv6only=on;
-	listen 443 ssl;
+	listen 443 ssl default;
 
 	server_name _;
 
@@ -60,14 +60,24 @@ server {
 
 	location / {
 		index  index.html index.htm;
-		autoindex on;
+		#autoindex on;
 		#try_files $uri $uri/index.html;
 		#try_files $uri $uri/index.html @github-page;
-		try_files $uri $uri/index.html /main$uri /main$uri/index.html;
+		root /srv/http/$new_host/htdocs;
+		try_files $uri $uri/ @overlay;
+	}
+
+	if (-d $request_filename) {
+		rewrite ^/(.*[^/])$ $1/ permanent; # add trailing slash
 	}
 
 	location ~* \.(manifest)$ {
 		expires -1;
+	}
+
+	location @overlay {
+		root /srv/http/$new_host/htdocs-overlay;
+		error_page 404 /404.html;
 	}
 
 	location @github-page {
@@ -128,7 +138,7 @@ server {
 	}
 
 	location /food/ {
-		alias /srv/http/localhost/htdocs/food/attachments/;
+		alias /srv/http/localhost/htdocs-overlay/food/attachments/;
 		index  index.html;
 		autoindex on;
 	}
@@ -209,6 +219,7 @@ server {
 
 	location ~ \.php$ {
 		#try_files $uri =404;
+		root /srv/http/$new_host/htdocs-overlay;
 		fastcgi_pass   php;
 		fastcgi_index  index.php;
 		fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
