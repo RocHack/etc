@@ -1,0 +1,3 @@
+# allow any RocHacker to maintain the web server and use wemux
+%rochack	ALL=(wwadmin, http, wemux) NOPASSWD: PROCESSES
+
