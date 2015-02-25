@@ -1,14 +1,14 @@
 # If you edit the file, you have to run "smtpctl update table aliases"
-postmaster	rochack.cel@lehnerstudios.com
-webmaster	rochack.cel@lehnerstudios.com
+root		clehner, cprovono@u.rochester.edu
+postmaster	root
+webmaster	root, steve@stevegattuso.me
+admin		root
 feedback	rochack@googlegroups.com
-hi			rochack@googlegroups.com
-hackathon	steve@stevegattuso.me
-root		clehner
-admin		clehner
+hi		rochack@googlegroups.com
+hackathon	steve@stevegattuso.me, jack
 celehner	clehner
-charles	clehner
-celtest		celtest.cel@celehner.com
+charles		clehner
+cel		clehner
 team		rochack@googlegroups.com
 sponsors	rochack@googlegroups.com
 jack		jvalinsk@u.rochester.edu
