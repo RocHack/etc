@@ -1,4 +1,5 @@
 # If you edit the file, you have to run "smtpctl update table aliases".
+# ~root/.vimrc takes care of this.
 #
 # Aliases without an @ apply to all our domains.
 #
