@@ -1,10 +1,4 @@
-# If you edit the file, you have to run "smtpctl update table aliases".
-# ~root/.vimrc takes care of this.
-#
-# Aliases without an @ apply to all our domains.
-#
-# Mail to usernames of local users go to whatever the user has at ~/.forward,
-# or are delivered to /var/spool/mail (read using mail command, etc)
+# If you edit the file, you have to run "smtpctl update table aliases-dandyhacks".
 
 # admin
 root		clehner, astralsorcerer 
@@ -29,3 +23,7 @@ team		cel, jack, dhassin@u.rochester.edu, stevenleeg
 hackathon	stevenleeg, jack
 sponsor		jack, akallel@u.rochester.edu, jramire7@u.rochester.edu
 sponsors	sponsor
+
+# dandyhacks
+
+team	jack, jramire7@u.rochester.edu, stevenleeg
