@@ -7,7 +7,7 @@
 # or are delivered to /var/spool/mail (read using mail command, etc)
 
 # admin
-root		clehner, cprovono@u.rochester.edu
+root		clehner, astralsorcerer 
 admin		root
 postmaster	root
 webmaster	root, stevenleeg
