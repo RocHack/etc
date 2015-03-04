@@ -1,3 +1,4 @@
 # allow any RocHacker to maintain the web server and use wemux
+Cmnd_Alias	PROCESSES = /bin/bash, /bin/su, /bin
 %rochack	ALL=(wwadmin, http, wemux) NOPASSWD: PROCESSES
 
